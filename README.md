@@ -80,11 +80,11 @@ For example, we remove the building artisan lambda step.
 
 Copy this new [serverless.yml](https://github.com/azole/laravel58-bref-cdk/blob/master/doc/serverless.yml) from doc folder to your bref project and deploy it again (or just synthesize it).
 
-You can get a new CloudFormation Template json files in .serverless folder.
+The new CloudFormation Template json files will be generated in .serverless folder.
 
-Observe this the creation json, which services does it create?
+Observe `./serverless/cloudformation-template-update-stack.json`, which services does it create?
 
-(You also can observe thess results in CloudFormation Stack AWS Console.)
+(You also can observe these results in CloudFormation Stack AWS Console.)
 
 - ServerlessDeploymentBucket: create a S3 bucket for uploading lambda zip file
 - WebsiteLogGroup: create a CloudWatch log group
@@ -100,9 +100,9 @@ Observe this the creation json, which services does it create?
 
 Now, you know which services you need to build.
 
-We haven't done anything yet, just deploying an empty laravel project. There are so many services we have to build and the CloudFormation Template json file has 347 lines.
+Do you notice that? We haven't done anything yet, just deploying an empty laravel project. There are so many services we have to build and the CloudFormation Template json file has 347 lines.
 
-Let's try AWS CDK and see how it implement this infra.
+Let's try AWS CDK and see how it implements this infra.
 
 
 ## Just Do It
@@ -112,8 +112,6 @@ Amogo the resources listed above, the most important services are Lambda Functio
 Before we create these services, we have to create laravel project in advance.
 
 ### Create Laravel Project with Bref
-
-- install serverless framework
 
 - Under **PHP 7.2+**, create a Laravel project and install Bref.
 
@@ -131,9 +129,9 @@ composer require bref/bref
 
 ### Create a CDK Deploy Project
 
-We create another project and initial by CDK.
+We create another project and initial it by AWS CDK.
 
-If you don't know how to use CDK, please refer to [AWS CDK Workshop](https://cdkworkshop.com/) or [my previous article first](https://medium.com/@azole/aws-cdk-%E5%88%9D%E6%8E%A2-5b481d3970bd).
+If you don't know how to use AWS CDK, please refer to [AWS CDK Workshop](https://cdkworkshop.com/) or [my previous article first](https://medium.com/@azole/aws-cdk-%E5%88%9D%E6%8E%A2-5b481d3970bd).
 
 ```
 # the same place as Laravel Project, not inside it.
@@ -180,11 +178,11 @@ Notice that you have to decide where the Laravel Project Code is located.
 
 ### Create a Rest API and Add ANY Method
 
-TBD
+*TBD*
 
 ### Create a Resource and Add ANY Method
 
-TBD
+*TBD*
 
 ### Summary
 
@@ -207,4 +205,4 @@ In next session, I'll show you why I prefer AWS CDK than serverless framework.
 
 ## Optimize - construct
 
-TBD
+*TBD*
