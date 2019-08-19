@@ -31,5 +31,9 @@ export class Laravel58CdkDeployStack extends cdk.Stack {
     // ApiGatewayMethodAny
     api.root.addMethod('ANY', postAPIIntegration);
 
+    // ApiGatewayResourceProxyVar
+    const resource = api.root.addResource("{proxy+}");
+    resource.addMethod('ANY', postAPIIntegration);
+
   }
 }
