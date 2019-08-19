@@ -1,0 +1,3 @@
+{
+  "app": "npx ts-node bin/laravel58-cdk-deploy.ts"
+}
