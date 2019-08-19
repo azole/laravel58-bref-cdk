@@ -144,13 +144,13 @@ cdk init -l typescript
 cdk bootstrap
 ```
 
-### Create a Lambda Function
+### Deploy a Lambda Function
 
 ```
 npm i @aws-cdk/aws-lambda
 ```
 
-at lib/laravel58-bref-cdk-stack.ts
+Edit lib/laravel58-bref-cdk-stack.ts
 
 ```
 import cdk = require('@aws-cdk/core');
@@ -172,9 +172,9 @@ export class Laravel58CdkDeployStack extends cdk.Stack {
 
 ```
 
-- import library @aws-cdk/aws-lambda
-- prepare Bref PHP Runtime Layer, you can find it in this page [https://runtimes.bref.sh/](https://runtimes.bref.sh/)
-- create lambda function
+- Import library @aws-cdk/aws-lambda
+- Prepare Bref PHP Runtime Layer, you can find it in this page [https://runtimes.bref.sh/](https://runtimes.bref.sh/)
+- Deploy lambda function
 
 Notice that you have to decide where the Laravel Project Code is.
 
