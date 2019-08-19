@@ -21,9 +21,9 @@ AWS Lambda is not native support for PHP but provides AWS Lambda runtime API and
 
 Now, you can use Bref tool to easily deploy and run serverless PHP applicatons.
 
-Bref relies [serverless](https://serverless.com/) and PHP 7.2+.
+Bref relies [serverless framework](https://serverless.com/) and PHP 7.2+.
 
-But what if you don't want to use serverless?
+But what if you don't want to use serverless framework?
 
 You can deploy application manually, develop CloudFormation template or try to develop CDK.
 
@@ -66,7 +66,7 @@ First, please implement the bref workshop in my another [repo](https://github.co
 
 If you have already done it, you now have an laravel project with Bref.
 
-After you execute `serverless deploy`, serverless generates two CloudFormation Template json files in `.serverless` folder.
+After you execute `serverless deploy`, serverless framework generates two CloudFormation Template json files in `.serverless` folder.
 
 One is for creation and another is for updation.
 
@@ -96,7 +96,7 @@ Observe this the creation json, which services does it create?
 - ApiGatewayMethodAny: create an ANY method for rest api
 - ApiGatewayMethodProxyVarAny: create an ANY method for resource 
 - ApiGatewayDeploymentXXXX: deploy this api gateway
-- WebsiteLambdaPermissionApiGateway: grant this rest api to invoke lambda function
+- WebsiteLambdaPermissionApiGateway: grant invoke permission to the API
 
 Now, you know which services you need to build.
 
@@ -113,7 +113,7 @@ Before we create these services, we have to create laravel project in advance.
 
 ### Create Laravel Project with Bref
 
-- install serverless
+- install serverless framework
 
 - Under **PHP 7.2+**, create a Laravel project and install Bref.
 
@@ -176,8 +176,35 @@ export class Laravel58CdkDeployStack extends cdk.Stack {
 - Prepare Bref PHP Runtime Layer, you can find it in this page [https://runtimes.bref.sh/](https://runtimes.bref.sh/)
 - Deploy lambda function
 
-Notice that you have to decide where the Laravel Project Code is.
+Notice that you have to decide where the Laravel Project Code is located.
+
+### Create a Rest API and Add ANY Method
+
+TBD
+
+### Create a Resource and Add ANY Method
+
+TBD
+
+### Summary
 
 
+Compare to the CloudWatch Template:
+
+- There is no need to create S3 bucket.
+- There is no need to handle IAM Role and Permission.
+- There is no need to deploy API Gateway.
+- There is no need to grant invoke permission to the API
+
+lib/laravel58-bref-cdk-stack.ts only has 39 lines. 
+
+Do you remember? The CloudWatch Template json file has 347 lines.
+
+If you don't want to rely on serverless framework, AWS CDK is a good choice.
+
+In next session, I'll show you why I prefer AWS CDK than serverless framework.
 
 
+## Optimize - construct
+
+TBD
