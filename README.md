@@ -78,7 +78,7 @@ To steamline the process, we revmoe some step in `serverless.yml`.
 
 For example, we remove the building artisan lambda step.
 
-Copy this new serverless.yml from doc folder to your bref project and deploy it again (or just synthesize it).
+Copy this new [serverless.yml](https://github.com/azole/laravel58-bref-cdk/blob/master/doc/serverless.yml) from doc folder to your bref project and deploy it again (or just synthesize it).
 
 You can get a new CloudFormation Template json files in .serverless folder.
 
