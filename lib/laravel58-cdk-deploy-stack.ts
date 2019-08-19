@@ -1,5 +1,6 @@
 import cdk = require('@aws-cdk/core');
 import lambda = require('@aws-cdk/aws-lambda');
+import { Duration } from '@aws-cdk/core';
 
 export class Laravel58CdkDeployStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -12,6 +13,8 @@ export class Laravel58CdkDeployStack extends cdk.Stack {
         code: lambda.Code.fromAsset('../laravel58-cdk'),
         handler: 'public/index.php',
         layers: [phpRuntimeLayer],
+        timeout: Duration.seconds(30),
+        memorySize: 1024,
     });
 
   }
