@@ -1,6 +1,7 @@
 import cdk = require('@aws-cdk/core');
 import lambda = require('@aws-cdk/aws-lambda');
 import { Duration } from '@aws-cdk/core';
+import apigw = require('@aws-cdk/aws-apigateway');
 
 export class Laravel58CdkDeployStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -16,6 +17,19 @@ export class Laravel58CdkDeployStack extends cdk.Stack {
         timeout: Duration.seconds(30),
         memorySize: 1024,
     });
+
+    // ApiGatewayRestApi
+    const api = new apigw.RestApi(this, 'CDK-Bref-api', {
+      endpointTypes: [apigw.EndpointType.EDGE],
+    });
+
+    // Integration
+    const postAPIIntegration = new apigw.LambdaIntegration(fn, {
+      proxy: true,
+    });
+
+    // ApiGatewayMethodAny
+    api.root.addMethod('ANY', postAPIIntegration);
 
   }
 }
