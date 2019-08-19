@@ -1,0 +1,347 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "The AWS CloudFormation template for this Serverless application",
+    "Resources": {
+      "ServerlessDeploymentBucket": {
+        "Type": "AWS::S3::Bucket",
+        "Properties": {
+          "BucketEncryption": {
+            "ServerSideEncryptionConfiguration": [
+              {
+                "ServerSideEncryptionByDefault": {
+                  "SSEAlgorithm": "AES256"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "WebsiteLogGroup": {
+        "Type": "AWS::Logs::LogGroup",
+        "Properties": {
+          "LogGroupName": "/aws/lambda/hello-laravel-bref-dev-website"
+        }
+      },
+      "IamRoleLambdaExecution": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": [
+                    "lambda.amazonaws.com"
+                  ]
+                },
+                "Action": [
+                  "sts:AssumeRole"
+                ]
+              }
+            ]
+          },
+          "Policies": [
+            {
+              "PolicyName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "dev",
+                    "hello-laravel-bref",
+                    "lambda"
+                  ]
+                ]
+              },
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "logs:CreateLogStream"
+                    ],
+                    "Resource": [
+                      {
+                        "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/hello-laravel-bref-dev*:*"
+                      }
+                    ]
+                  },
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "logs:PutLogEvents"
+                    ],
+                    "Resource": [
+                      {
+                        "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/hello-laravel-bref-dev*:*:*"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "Path": "/",
+          "RoleName": {
+            "Fn::Join": [
+              "-",
+              [
+                "hello-laravel-bref",
+                "dev",
+                {
+                  "Ref": "AWS::Region"
+                },
+                "lambdaRole"
+              ]
+            ]
+          }
+        }
+      },
+      "WebsiteLambdaFunction": {
+        "Type": "AWS::Lambda::Function",
+        "Properties": {
+          "Code": {
+            "S3Bucket": {
+              "Ref": "ServerlessDeploymentBucket"
+            },
+            "S3Key": "serverless/hello-laravel-bref/dev/1566192113715-2019-08-19T05:21:53.715Z/hello-laravel-bref.zip"
+          },
+          "FunctionName": "hello-laravel-bref-dev-website",
+          "Handler": "public/index.php",
+          "MemorySize": 1024,
+          "Role": {
+            "Fn::GetAtt": [
+              "IamRoleLambdaExecution",
+              "Arn"
+            ]
+          },
+          "Runtime": "provided",
+          "Timeout": 30,
+          "Environment": {
+            "Variables": {
+              "APP_STORAGE": "/tmp"
+            }
+          },
+          "Layers": [
+            "arn:aws:lambda:us-west-2:209497400698:layer:php-73-fpm:10"
+          ]
+        },
+        "DependsOn": [
+          "WebsiteLogGroup",
+          "IamRoleLambdaExecution"
+        ]
+      },
+      "WebsiteLambdaVersiongJ6Z8udYanUC9rIKOCfOMV3bR8QXo0hwqOckxktx0": {
+        "Type": "AWS::Lambda::Version",
+        "DeletionPolicy": "Retain",
+        "Properties": {
+          "FunctionName": {
+            "Ref": "WebsiteLambdaFunction"
+          },
+          "CodeSha256": "8w0S2To8B9vpJDxWq42HihsXgpfoiRVVV6mRvBkbOtc="
+        }
+      },
+      "ApiGatewayRestApi": {
+        "Type": "AWS::ApiGateway::RestApi",
+        "Properties": {
+          "Name": "dev-hello-laravel-bref",
+          "EndpointConfiguration": {
+            "Types": [
+              "EDGE"
+            ]
+          }
+        }
+      },
+      "ApiGatewayResourceProxyVar": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+          "ParentId": {
+            "Fn::GetAtt": [
+              "ApiGatewayRestApi",
+              "RootResourceId"
+            ]
+          },
+          "PathPart": "{proxy+}",
+          "RestApiId": {
+            "Ref": "ApiGatewayRestApi"
+          }
+        }
+      },
+      "ApiGatewayMethodAny": {
+        "Type": "AWS::ApiGateway::Method",
+        "Properties": {
+          "HttpMethod": "ANY",
+          "RequestParameters": {},
+          "ResourceId": {
+            "Fn::GetAtt": [
+              "ApiGatewayRestApi",
+              "RootResourceId"
+            ]
+          },
+          "RestApiId": {
+            "Ref": "ApiGatewayRestApi"
+          },
+          "ApiKeyRequired": false,
+          "AuthorizationType": "NONE",
+          "Integration": {
+            "IntegrationHttpMethod": "POST",
+            "Type": "AWS_PROXY",
+            "Uri": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition"
+                  },
+                  ":apigateway:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":lambda:path/2015-03-31/functions/",
+                  {
+                    "Fn::GetAtt": [
+                      "WebsiteLambdaFunction",
+                      "Arn"
+                    ]
+                  },
+                  "/invocations"
+                ]
+              ]
+            }
+          },
+          "MethodResponses": []
+        }
+      },
+      "ApiGatewayMethodProxyVarAny": {
+        "Type": "AWS::ApiGateway::Method",
+        "Properties": {
+          "HttpMethod": "ANY",
+          "RequestParameters": {},
+          "ResourceId": {
+            "Ref": "ApiGatewayResourceProxyVar"
+          },
+          "RestApiId": {
+            "Ref": "ApiGatewayRestApi"
+          },
+          "ApiKeyRequired": false,
+          "AuthorizationType": "NONE",
+          "Integration": {
+            "IntegrationHttpMethod": "POST",
+            "Type": "AWS_PROXY",
+            "Uri": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition"
+                  },
+                  ":apigateway:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":lambda:path/2015-03-31/functions/",
+                  {
+                    "Fn::GetAtt": [
+                      "WebsiteLambdaFunction",
+                      "Arn"
+                    ]
+                  },
+                  "/invocations"
+                ]
+              ]
+            }
+          },
+          "MethodResponses": []
+        }
+      },
+      "ApiGatewayDeployment1566192100506": {
+        "Type": "AWS::ApiGateway::Deployment",
+        "Properties": {
+          "RestApiId": {
+            "Ref": "ApiGatewayRestApi"
+          },
+          "StageName": "dev"
+        },
+        "DependsOn": [
+          "ApiGatewayMethodAny",
+          "ApiGatewayMethodProxyVarAny"
+        ]
+      },
+      "WebsiteLambdaPermissionApiGateway": {
+        "Type": "AWS::Lambda::Permission",
+        "Properties": {
+          "FunctionName": {
+            "Fn::GetAtt": [
+              "WebsiteLambdaFunction",
+              "Arn"
+            ]
+          },
+          "Action": "lambda:InvokeFunction",
+          "Principal": "apigateway.amazonaws.com",
+          "SourceArn": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":execute-api:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":",
+                {
+                  "Ref": "AWS::AccountId"
+                },
+                ":",
+                {
+                  "Ref": "ApiGatewayRestApi"
+                },
+                "/*/*"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "Outputs": {
+      "ServerlessDeploymentBucketName": {
+        "Value": {
+          "Ref": "ServerlessDeploymentBucket"
+        }
+      },
+      "WebsiteLambdaFunctionQualifiedArn": {
+        "Description": "Current Lambda function version",
+        "Value": {
+          "Ref": "WebsiteLambdaVersiongJ6Z8udYanUC9rIKOCfOMV3bR8QXo0hwqOckxktx0"
+        }
+      },
+      "ServiceEndpoint": {
+        "Description": "URL of the service endpoint",
+        "Value": {
+          "Fn::Join": [
+            "",
+            [
+              "https://",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              ".execute-api.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/dev"
+            ]
+          ]
+        }
+      }
+    }
+  }
