@@ -162,7 +162,7 @@ export class Laravel58CdkDeployStack extends cdk.Stack {
     // At this page, select correct Region and PHP version
     const phpRuntimeLayer = lambda.LayerVersion.fromLayerVersionArn(this, 'lambda-php72-runtime', 'arn:aws:lambda:us-west-2:209497400698:layer:php-72-fpm:10');
 
-    new lambda.Function(this, 'CDK-Bref-fn', {
+    const fn = new lambda.Function(this, 'CDK-Bref-fn', {
         runtime: lambda.Runtime.PROVIDED, // for custom runtime
         code: lambda.Code.fromAsset('../laravel58-cdk'),
         handler: 'public/index.php',
@@ -221,7 +221,7 @@ AWS provides the good [API Reference](https://docs.aws.amazon.com/cdk/api/latest
 
 At the API reference page, serach "lambda" and you will find the guide of aws-lambda construct.
 
-Study these document and you will know how to do it.
+Study these documents and you will know how to do it.
 
 - [aws-lambda module](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-readme.html)
 - [class Function (construct)](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-lambda.Function.html)
@@ -238,7 +238,7 @@ export class Laravel58CdkDeployStack extends cdk.Stack {
 
     const phpRuntimeLayer = lambda.LayerVersion.fromLayerVersionArn(this, 'lambda-php72-runtime', 'arn:aws:lambda:us-west-2:209497400698:layer:php-72-fpm:10');
 
-    new lambda.Function(this, 'CDK-Bref-fn', {
+    const fn = new lambda.Function(this, 'CDK-Bref-fn', {
         runtime: lambda.Runtime.PROVIDED, // for custom runtime
         code: lambda.Code.fromAsset('../laravel58-cdk'),
         handler: 'public/index.php',
@@ -256,14 +256,100 @@ After edit the code, you deploy it again and will get the expected result.
 
 ### Create a Rest API and Add ANY Method
 
-*TBD*
+So far, we have successfully deployed the Laravel application with Bref to lambda.
+
+That is, we finished the IamRoleLambdaExecution and WebsiteLambdaFunction task in CloudWatch Template json file.
+
+But we still can't connect our website by browser, we need AWS API Gateway to pushlish APIs.
+
+Observe AWS CloudWatch Template, it create a Rest API, add a Resource and a ANY method to this Rest API, add a ANY method to Resource.
+
+Let's start with a simple one - create a Rest API and add a ANY method to it.
+
+Also, [AWS API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html) is your good friend.
+
+Study the documents listed as below:
+
+- [aws-apigateway modul](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigateway-readme.html)
+- [class RestApi (construct)](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-apigateway.RestApi.html)
+- [class LambdaIntegration](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-apigateway.LambdaIntegration.html)
+
+```
+    // ... after lambda function
+
+    // ApiGatewayRestApi
+    const api = new apigw.RestApi(this, 'CDK-Bref-api', {
+      endpointTypes: [apigw.EndpointType.EDGE],
+    });
+
+    // Integration with Lambda function
+    const postAPIIntegration = new apigw.LambdaIntegration(fn, {
+      proxy: true,
+    });
+
+    // ApiGatewayMethodAny
+    api.root.addMethod('ANY', postAPIIntegration);
+```
+
+Look, it is very simple! Just only 3 functions and you complete the tasks.
+
+Deploy it and go to AWS API Gateway Console. 
+
+You will get "CDK-Bref-api" and go to stages to find out the invoke URL.
+
+Open that invode URL and you can open the laravel application index page.
+
+Until now, we already successfully published this laravel website.
+
+It still has a little bug.
+
+When you try to open http://[Invoke URL]/prod/test, you will get "Internal server error".
+
+```
+{
+  "message": "Internal server error"
+}
+```
+
+Why and how to solve this problem?
 
 ### Create a Resource and Add ANY Method
 
-*TBD*
+Error logs in many cases are very helpful when you're troubleshooting.
+
+By default, the log of API Gateway is disable. You have to set up it by yourself.
+
+Please refer to this link: [Set Up CloudWatch API Logging in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html)
+
+Do you notice that? You have to handle permissions first.
+
+In AWS CDK, it is more easier than you think. Just add deployOptions listed as below:
+
+```
+    // ApiGatewayRestApi
+    const api = new apigw.RestApi(this, 'CDK-Bref-api', {
+      endpointTypes: [apigw.EndpointType.EDGE],
+      // enable logging
+      deployOptions: {
+        loggingLevel: apigw.MethodLoggingLevel.INFO,
+      }
+    });
+```
+
+> By default, an IAM role will be created and associated with API Gateway to allow it to write logs and metrics to AWS CloudWatch unless cloudWatchRole is set to false.
+
+After you enable logging for API Gateway, the API Gateway will create the log group named API-Gateway-Execution-Logs_{rest-api-id}/{stage_name} and also create hundreds of log stream for future requests. Don't panic for these hundreds log streama, it's normal.
+
+When the requests start coming in, you'll see those log streams start to record logs.
+
+Let's check what happened when we try to open http://[Invoke URL]/prod/test.
+
+`Execution failed due to configuration error: Invalid permissions on Lambda function`
+
+TBD
+
 
 ### Summary
-
 
 Compare to the CloudWatch Template:
 
