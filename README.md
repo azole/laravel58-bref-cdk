@@ -158,10 +158,12 @@ export class Laravel58CdkDeployStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    // Get Bref layer ARN from https://runtimes.bref.sh/
+    // At this page, select correct Region and PHP version
     const phpRuntimeLayer = lambda.LayerVersion.fromLayerVersionArn(this, 'lambda-php72-runtime', 'arn:aws:lambda:us-west-2:209497400698:layer:php-72-fpm:10');
 
     new lambda.Function(this, 'CDK-Bref-fn', {
-        runtime: lambda.Runtime.PROVIDED,
+        runtime: lambda.Runtime.PROVIDED, // for custom runtime
         code: lambda.Code.fromAsset('../laravel58-cdk'),
         handler: 'public/index.php',
         layers: [phpRuntimeLayer],
@@ -175,6 +177,77 @@ export class Laravel58CdkDeployStack extends cdk.Stack {
 - Deploy lambda function
 
 Notice that you have to decide where the Laravel Project Code is located.
+
+### Add lambda function settings
+
+After we deploy this Laravel application to lambda, we login to AWS Console and test this lambda function.
+
+You can select "Amazon API Gateway AWS Proxy" as event template and update path from "/path/to/resource" to "/" and httpMethod from "POST" to "GET".
+
+```
+{
+  "body": "eyJ0ZXN0IjoiYm9keSJ9",
+  "resource": "/{proxy+}",
+  "path": "/",
+  "httpMethod": "GET",
+  "isBase64Encoded": true,
+  ....
+}
+```
+
+And then, click "Test" button.
+
+Boom! You will get an failed result and an error message as below:
+
+```
+{
+  "errorMessage": "2019-08-20T05:19:34.565Z xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx Task timed out after 3.00 seconds"
+}
+```
+
+Scroll donw the web page, you will see the Basic Settings section.
+
+Try to config Memory to 1024 MB and Timeout to 30 seconds and test again.
+
+This time, you can get status code 200 response!
+
+This means that the PHP Runtime Layer works and we deply the Laravel application by CDK successfully.
+
+It is still incomplete because we need to make some settings in AWS Console.
+
+Let's do it by AWS CDK.
+
+AWS provides the good [API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html).
+
+At the API reference page, serach "lambda" and you will find the guide of [aws-lambda construct](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-readme.html).
+
+Study this document and you will know how to do it.
+
+```
+import cdk = require('@aws-cdk/core');
+import lambda = require('@aws-cdk/aws-lambda');
+
+export class Laravel58CdkDeployStack extends cdk.Stack {
+  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+
+    const phpRuntimeLayer = lambda.LayerVersion.fromLayerVersionArn(this, 'lambda-php72-runtime', 'arn:aws:lambda:us-west-2:209497400698:layer:php-72-fpm:10');
+
+    new lambda.Function(this, 'CDK-Bref-fn', {
+        runtime: lambda.Runtime.PROVIDED, // for custom runtime
+        code: lambda.Code.fromAsset('../laravel58-cdk'),
+        handler: 'public/index.php',
+        layers: [phpRuntimeLayer],
+        // set timeout to 30 seconds
+        timeout: Duration.seconds(30),
+        // set memory to 1024 MB
+        memorySize: 1024,
+    });
+}
+```
+
+After edit the code, you deploy it again and will get the expected result.
+
 
 ### Create a Rest API and Add ANY Method
 
