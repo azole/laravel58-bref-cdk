@@ -215,13 +215,18 @@ This means that the PHP Runtime Layer works and we deply the Laravel application
 
 It is still incomplete because we need to make some settings in AWS Console.
 
-Let's do it by AWS CDK.
+#### Let's do it by AWS CDK.
 
 AWS provides the good [API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html).
 
-At the API reference page, serach "lambda" and you will find the guide of [aws-lambda construct](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-readme.html).
+At the API reference page, serach "lambda" and you will find the guide of aws-lambda construct.
 
-Study this document and you will know how to do it.
+Study these document and you will know how to do it.
+
+- [aws-lambda module](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-readme.html)
+- [class Function (construct)](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-lambda.Function.html)
+- [interface FunctionProps](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-lambda.FunctionProps.html)
+
 
 ```
 import cdk = require('@aws-cdk/core');
