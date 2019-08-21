@@ -23,9 +23,9 @@ export class Laravel58CdkDeployStack extends cdk.Stack {
     const api = new apigw.RestApi(this, 'CDK-Bref-api', {
       endpointTypes: [apigw.EndpointType.EDGE],
       // enable logging
-      deployOptions: {
-        loggingLevel: apigw.MethodLoggingLevel.INFO,
-      }
+      // deployOptions: {
+      //   loggingLevel: apigw.MethodLoggingLevel.INFO,
+      // }
     });
 
     // Integration with Lambda function
@@ -37,8 +37,7 @@ export class Laravel58CdkDeployStack extends cdk.Stack {
     api.root.addMethod('ANY', postAPIIntegration);
 
     // ApiGatewayResourceProxyVar
-    // const resource = api.root.addResource("{proxy+}");
-    // resource.addMethod('ANY', postAPIIntegration);
-
+    const resource = api.root.addResource("{proxy+}");
+    resource.addMethod('ANY', postAPIIntegration);
   }
 }
