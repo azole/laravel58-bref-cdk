@@ -25,7 +25,7 @@ Bref relies [serverless framework](https://serverless.com/) and PHP 7.2+.
 
 But what if you don't want to use serverless framework?
 
-You can deploy application manually, develop CloudFormation template or try to develop CDK.
+You can deploy application manually, by CloudFormation template or by AWS CDK.
 
 References:
 - [Bref](https://bref.sh/)
@@ -452,4 +452,18 @@ Now, you can publish the PHPDeployer construct as a module or package on npm to 
 
 It's great, right?
 
+# Conclusion
 
+In this practice, I try to deploy the Laravel application with Bref by AWS CDK.
+
+In the original demo, Bref uses the serverless framework to deploy the PHP application.
+
+I just want to practice AWS CDK and compare the differences between AWS CDK and serverless framework.
+
+In my personal opinion, I prefer to develop AWS CDK.
+
+You can try it yourself and decide which one is better for you.
+
+Keep in mind that there is no perfect solution. It depends on what you want and what kind of problem you want to solve.
+
+Enjoy the whole process of trying new stuff and you'll learn more you expect.
