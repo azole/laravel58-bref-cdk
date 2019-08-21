@@ -5,7 +5,7 @@
 
 This workshop relies on Laravel, Bref and CDK.
 
-If you don't know what Bref is or what CDK is, please recap these references listed as below.
+If you don't know what Bref is or what CDK is, please recap these references listed below.
 
 
 ### Laravel
@@ -268,7 +268,7 @@ Let's start with a simple one - create a Rest API and add a ANY method to it.
 
 Also, [AWS API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html) is your good friend.
 
-Study the documents listed as below:
+Study the documents listed as follows:
 
 - [aws-apigateway modul](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigateway-readme.html)
 - [class RestApi (construct)](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-apigateway.RestApi.html)
@@ -323,7 +323,7 @@ Please refer to this link: [Set Up CloudWatch API Logging in API Gateway](https:
 
 Do you notice that? You have to handle permissions first.
 
-In AWS CDK, it is more easier than you think. Just add deployOptions listed as below:
+In AWS CDK, it is more easier than you think. Just add deployOptions listed below:
 
 ```
     // ApiGatewayRestApi
@@ -348,7 +348,7 @@ I told earlier that error logs are very helpful in many cases. Unfortunately, in
 
 We won't get any logs for "Missing Authentication Token".
 
-Try to search in Google and AWS Document, I found some references listed as below:
+Try to search in Google and AWS Document, here are some references:
 
 - https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html
 - https://kennbrodhagen.net/2016/07/23/how-to-enable-logging-for-api-gateway/
@@ -402,4 +402,54 @@ In next session, I'll show you why I prefer AWS CDK than serverless framework.
 
 ## Optimize - construct
 
-*TBD*
+Create a new file under bin folder called php-deployer.ts with the following content:
+
+```
+import cdk = require('@aws-cdk/core');
+
+export interface PHPDeployerProps {
+    phpRuntimeLayerARN: string,
+    phpCodePath: string,
+    handler: string,
+}
+
+export class PHPDeployer extends cdk.Construct {
+
+    constructor(scope: cdk.Construct, id: string, props: PHPDeployerProps) {
+        super(scope, id);
+
+        // TODO
+    }
+}
+
+```
+
+Move the deploy code from Laravel58CdkDeployStack to this class and replace some hardcode strings to props.
+
+Please refer to lib/php-develpers.ts file.
+
+Use PHPDeployer to replace the original code in laravel58-cdk-deploy-stack.ts file.
+
+```
+import cdk = require('@aws-cdk/core');
+import { PHPDeployer } from './php-deployer';
+
+export class Laravel58CdkDeployStack extends cdk.Stack {
+  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+
+    // Get Bref layer ARN from https://runtimes.bref.sh/
+    new PHPDeployer(this, 'HelloPHPDeployer', {
+      phpRuntimeLayerARN: 'arn:aws:lambda:us-west-2:209497400698:layer:php-72-fpm:10',
+      phpCodePath: '../laravel58-cdk',
+      handler: 'public/index.php'
+    });
+  }
+}
+```
+
+Now, you can publish the PHPDeployer construct as a module or package on npm to your team or to community.
+
+It's great, right?
+
+
