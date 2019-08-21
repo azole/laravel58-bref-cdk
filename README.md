@@ -1,4 +1,4 @@
-# Deploy PHP Application to Lambda With Bref and CDK
+# Deploy PHP Application to Lambda With Bref by AWS CDK
 
 
 ## Recap
