@@ -7,6 +7,7 @@ This workshop relies on Laravel, Bref and CDK.
 
 If you don't know what Bref is or what CDK is, please recap these references listed below.
 
+ps. 中文文章在此 [Deploy Laravel to Lambda With Bref by AWS CDK](https://medium.com/@azole/deploy-laravel-to-lambda-with-bref-by-aws-cdk-5a1ba8748014?sk=cb4382621a14f8c197f929eaabb1d452)
 
 ### Laravel
 
@@ -303,7 +304,7 @@ Until now, we already successfully published this laravel website.
 
 It still has a little bug.
 
-When you try to open http://[Invoke URL]/prod/test, you will get "Internal server error".
+When you try to open http://[Invoke URL]/prod/test, you will get "Missing Authentication Token".
 
 ```
 {
@@ -369,7 +370,6 @@ In AWS CDK, it is still easy to create a proxy resource. Just add two lines afte
     const resource = api.root.addResource("{proxy+}");
     // set a ANY method to this proxy resource
     resource.addMethod('ANY', postAPIIntegration);
-
     ...
 ```
 
@@ -402,7 +402,7 @@ In next session, I'll show you why I prefer AWS CDK than serverless framework.
 
 ## Optimize - construct
 
-Create a new file under bin folder called php-deployer.ts with the following content:
+Create a new file under lib folder called php-deployer.ts with the following content:
 
 ```
 import cdk = require('@aws-cdk/core');
