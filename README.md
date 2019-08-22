@@ -30,8 +30,8 @@ You can deploy application manually, by CloudFormation template or by AWS CDK.
 
 References:
 - [Bref](https://bref.sh/)
-- [Deploy Serverless Laravel by Bref](https://medium.com/@azole/deploy-serverless-laravel-by-bref-6f28b1e0d53a)
-- [Laravel 5.8 with Bref](https://github.com/azole/laravel58-bref)
+- [Deploy Serverless Laravel by Bref](https://medium.com/@azole/deploy-serverless-laravel-by-bref-6f28b1e0d53a) (Chinese)
+- [Laravel 5.8 with Bref](https://github.com/azole/laravel58-bref) (another github repo)
 
 ### AWS CDK
 
@@ -44,7 +44,7 @@ AWS CDK defines cloud infrastructure in code and provisions it through AWS Cloud
 AWS CDK supports TypeScript, JavaScript, and Python. In preview, it also supports C#/.NET and Java.
 
 References:
-- [AWS CDK 初探](https://medium.com/@azole/aws-cdk-%E5%88%9D%E6%8E%A2-5b481d3970bd)
+- [AWS CDK 初探](https://medium.com/@azole/aws-cdk-%E5%88%9D%E6%8E%A2-5b481d3970bd) (Chinese)
 - [AWS CDK Guide](https://docs.aws.amazon.com/en_us/cdk/latest/guide/home.html)
 - [AWS CDK Workshop](https://cdkworkshop.com/)
 
